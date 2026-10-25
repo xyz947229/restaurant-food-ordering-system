@@ -1,0 +1,63 @@
+```html
+{% extends 'ordering/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">MySQL Trigger Demonstration</h2>
+
+    <p>
+        The MySQL trigger <strong>after_order_insert</strong> automatically
+        records an audit entry whenever a new order is inserted into
+        the <strong>order_details</strong> table.
+    </p>
+
+    <button class="btn btn-primary mb-3" onclick="window.location.reload();">
+        Refresh Audit Records
+    </button>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+
+    {% elif audit_records %}
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Audit ID</th>
+                        <th>Order ID</th>
+                        <th>Action</th>
+                        <th>Action Time</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for record in audit_records %}
+                        <tr>
+                            <td>{{ record.audit_id }}</td>
+                            <td>{{ record.order_id }}</td>
+                            <td>{{ record.action_type }}</td>
+                            <td>{{ record.action_time }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% else %}
+        <div class="alert alert-info">
+            No audit records found yet. Create a new order to test the trigger.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'order_create' %}" class="btn btn-success">
+        Create a New Order
+    </a>
+
+    <a href="{% url 'dbms_queries_demo' %}" class="btn btn-secondary">
+        Back to SQL Demo
+    </a>
+</div>
+{% endblock %}
+```

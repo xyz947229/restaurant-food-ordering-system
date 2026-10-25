@@ -64,6 +64,11 @@ urlpatterns = [
     # DBMS Queries Live Demo
     path('queries-demo/', views.dbms_queries_demo, name='dbms_queries_demo'),
 
+    # Stored Procedure Demo
+    path('customer-orders-procedure/', views.customer_orders_procedure, name='customer_orders_procedure'),
+    path('cursor-revenue-procedure/', views.cursor_revenue_procedure, name='cursor_revenue_procedure'),
+    path('trigger-audit/', views.trigger_audit_demo, name='trigger_audit_demo'),
+
     # API endpoints
     path('api/', include(router.urls)),
     path('api/dashboard-stats/', api_views.dashboard_stats_api, name='api_dashboard_stats'),

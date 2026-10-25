@@ -1,0 +1,38 @@
+```html
+{% extends 'ordering/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Cursor-Based Stored Procedure Demonstration</h2>
+
+    <p>
+        This demonstration uses a MySQL cursor to fetch each order's price
+        and calculate the total revenue.
+    </p>
+
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-primary">
+            Calculate Total Revenue
+        </button>
+    </form>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if total_revenue is not None %}
+        <div class="alert alert-success">
+            <h4>Total Revenue</h4>
+            <h3>{{ total_revenue }}</h3>
+        </div>
+    {% endif %}
+
+    <a href="{% url 'dbms_queries_demo' %}" class="btn btn-secondary mt-2">
+        Back to SQL Demo
+    </a>
+</div>
+{% endblock %}
+```

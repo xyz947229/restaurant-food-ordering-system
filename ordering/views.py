@@ -558,3 +558,102 @@ ORDER BY fb.rating DESC;"""
                 })
 
     return render(request, 'ordering/dbms_queries.html', {'results': results})
+
+
+
+# ==========================================
+# 10. STORED PROCEDURE DEMONSTRATION
+# ==========================================
+def customer_orders_procedure(request):
+    orders = []
+    customer_id = None
+    error = None
+
+    if request.method == 'POST':
+        customer_id = request.POST.get('customer_id', '').strip()
+
+        if not customer_id.isdigit():
+            error = "Please enter a valid customer ID."
+        else:
+            try:
+                with connection.cursor() as cursor:
+                    cursor.execute(
+                        "CALL restaurant_food_ordering.GetCustomerOrders(%s)",
+                        [int(customer_id)]
+                    )
+                    columns = [column[0] for column in cursor.description]
+                    orders = [
+                        dict(zip(columns, row))
+                        for row in cursor.fetchall()
+                    ]
+
+                    # Consume any remaining result sets before reusing
+                    # the MySQL connection.
+                    while cursor.nextset():
+                        pass
+
+            except Exception as e:
+                error = str(e)
+
+    return render(request, 'ordering/customer_orders_procedure.html', {
+        'orders': orders,
+        'customer_id': customer_id,
+        'error': error,
+    })
+
+
+def cursor_revenue_procedure(request):
+    total_revenue = None
+    error = None
+
+    if request.method == 'POST':
+        try:
+            with connection.cursor() as cursor:
+                cursor.execute(
+                    "CALL restaurant_food_ordering.CalculateRevenueUsingCursor()"
+                )
+
+                row = cursor.fetchone()
+                if row:
+                    total_revenue = row[0]
+
+                # Consume any remaining result sets.
+                while cursor.nextset():
+                    pass
+
+        except Exception as e:
+            error = str(e)
+
+    return render(request, 'ordering/cursor_revenue_procedure.html', {
+        'total_revenue': total_revenue,
+        'error': error,
+    })
+
+
+def trigger_audit_demo(request):
+    audit_records = []
+    error = None
+
+    try:
+        with connection.cursor() as cursor:
+            cursor.execute("""
+                SELECT audit_id, order_id, action_type, action_time
+                FROM order_audit
+                ORDER BY audit_id DESC
+            """)
+
+            columns = [column[0] for column in cursor.description]
+            audit_records = [
+                dict(zip(columns, row))
+                for row in cursor.fetchall()
+            ]
+
+    except Exception as e:
+        error = str(e)
+
+    return render(request, 'ordering/trigger_audit_demo.html', {
+        'audit_records': audit_records,
+        'error': error,
+    })
+
+

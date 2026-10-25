@@ -1,0 +1,82 @@
+```html
+{% extends 'ordering/base.html' %}
+
+{% block content %}
+<div class="container mt-4">
+    <h2 class="mb-3">Stored Procedure Demonstration</h2>
+
+    <p>
+        This page uses the MySQL stored procedure
+        <strong>GetCustomerOrders</strong> to retrieve orders for a selected customer.
+    </p>
+
+    <form method="POST" class="mb-4">
+        {% csrf_token %}
+
+        <div class="mb-3">
+            <label for="customer_id" class="form-label">Customer ID</label>
+            <input
+                type="number"
+                name="customer_id"
+                id="customer_id"
+                class="form-control"
+                min="1"
+                required
+                value="{{ customer_id|default:'' }}"
+            >
+        </div>
+
+        <button type="submit" class="btn btn-primary">
+            Get Customer Orders
+        </button>
+    </form>
+
+    {% if error %}
+        <div class="alert alert-danger">
+            {{ error }}
+        </div>
+    {% endif %}
+
+    {% if orders %}
+        <h4>Orders for Customer ID: {{ customer_id }}</h4>
+
+        <div class="table-responsive">
+            <table class="table table-bordered table-striped mt-3">
+                <thead class="table-dark">
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Customer ID</th>
+                        <th>Supplier ID</th>
+                        <th>Order Date</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    {% for order in orders %}
+                        <tr>
+                            <td>{{ order.order_id }}</td>
+                            <td>{{ order.cust_id }}</td>
+                            <td>{{ order.supplier_id }}</td>
+                            <td>{{ order.order_date }}</td>
+                            <td>{{ order.quantity }}</td>
+                            <td>{{ order.price }}</td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+    {% elif customer_id and not error %}
+        <div class="alert alert-info">
+            No orders found for Customer ID {{ customer_id }}.
+        </div>
+    {% endif %}
+
+    <a href="{% url 'dbms_queries_demo' %}" class="btn btn-secondary mt-2">
+        Back to SQL Demo
+    </a>
+</div>
+{% endblock %}
+```
